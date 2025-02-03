@@ -1,7 +1,6 @@
+@import "tailwindcss";
 
 
-@import "@fontsource/bricolage-grotesque/variable.css";
-@import "@fontsource/inter/variable.css";
 
 /* For Firefox */
 .scrollbar-thumb-black {

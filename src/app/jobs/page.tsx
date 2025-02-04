@@ -97,7 +97,7 @@ const Home: NextPage = () => {
                       </td>
                      
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                      <button className="flex items-center text-blue-600 hover:text-blue-700"
+                      <button className="cursor-pointer flex items-center text-blue-600 hover:text-blue-700"
                                             onClick={()=>router.push(`/viewjob/${job.id}`)}>
 
       <PencilIcon className="w-6 h-6" /> {/* Icon size can be adjusted */}
@@ -105,7 +105,7 @@ const Home: NextPage = () => {
     </button>
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                      <button className="flex items-center text-red-600 hover:text-red-700"
+                      <button className="cursor-pointer flex items-center text-red-600 hover:text-red-700"
                                             onClick={()=>deleteDepartment(department.id)}>
 
       <TrashIcon className="w-6 h-6" /> {/* Adjust size as needed */}

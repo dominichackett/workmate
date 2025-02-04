@@ -29,7 +29,9 @@ setShow(false);
         initialValues: {
            name: "",
            description:"",
-          proposal:""
+          proposal:"",
+          qualified:0,
+          status:0
         },
         validationSchema: Yup.object({
           name: Yup.string()
@@ -41,8 +43,12 @@ setShow(false);
             proposal:  Yup.number()
             .required("Interval selection is required")
             .min(10, "Interval must be at least 10"),
+            qualified: Yup.number()
+            .required("required"),
             
-
+            status: Yup.number()
+            .required("required"),
+            
          
         }),
         onSubmit: async(values) => {
@@ -121,7 +127,7 @@ setShow(false);
 
          <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
-         <div className="sm:col-span-2 sm:col-start-1">
+         <div className="sm:col-span-6 sm:col-start-1">
              <label htmlFor="name" className="block text-sm font-medium leading-6 text-gray-900">
                Name {formik.touched.name && formik.errors.name ? (
           <span className="text-red-500 text-sm">{formik.errors.name}</span>
@@ -140,6 +146,60 @@ setShow(false);
 />
              </div>
            </div>
+
+           <div className="sm:col-span-1">
+             <label htmlFor="qualified" className="block text-sm font-medium leading-6 text-gray-900">
+               Qualifed {formik.touched.qualifed && formik.errors.qualified ? (
+          <span className="text-red-500 text-sm">{formik.errors.qualified}</span>
+        ) : null}
+             </label>
+             <div className="mt-2">
+             <select
+       id="qualified"
+       disabled={true}
+       onChange={formik.handleChange}
+       onBlur={formik.handleBlur}
+       value={formik.values.qualfied}
+       className="bg-[#2dd9ff] block w-60 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+     >
+  <option value={0}>No</option>
+  <option value={1}>Yes</option>
+ 
+
+    
+          
+     </select>     
+             </div>
+           </div>
+
+           <div className="sm:col-span-2">
+             <label htmlFor="status" className="block text-sm font-medium leading-6 text-gray-900">
+               Status {formik.touched.status && formik.errors.status ? (
+          <span className="text-red-500 text-sm">{formik.errors.status}</span>
+        ) : null}
+             </label>
+             <div className="mt-2">
+             <select
+       id="status"
+       
+       onChange={formik.handleChange}
+       onBlur={formik.handleBlur}
+       value={formik.values.status}
+       className="bg-[#2dd9ff] block w-60 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+     >
+  <option value={0}>Pending</option>
+  <option value={1}>Applied</option>
+  <option value={2}>Won</option>
+  <option value={3}>Not Won</option>
+ 
+ 
+
+    
+          
+     </select>     
+             </div>
+           </div>
+             
 
          
            <div className="sm:col-span-6">

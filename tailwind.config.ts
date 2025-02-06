@@ -2,6 +2,7 @@ import defaultTheme from "tailwindcss/defaultTheme";
 import type { Config } from "tailwindcss";
 import '@tailwindcss/typography'
 const config: Config = {
+  
   content: [
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
@@ -17,6 +18,7 @@ const config: Config = {
       },
     },
   },
+  
   plugins: [],
 };
 

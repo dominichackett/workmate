@@ -7,6 +7,22 @@ import { useState ,useEffect,useRef,useContext} from 'react'
   import { useRouter } from 'next/navigation'
 
 import Link from 'next/link';
+import {
+  ConnectWallet,
+  Wallet,
+  WalletDefault,
+  WalletDropdown,
+  WalletDropdownBasename,
+  WalletDropdownLink,
+} from '@coinbase/onchainkit/wallet';
+import {
+  Address,
+  Avatar,
+  Badge,
+  EthBalance,
+  Name,
+  Identity,
+} from '@coinbase/onchainkit/identity';
 
   export default function Header(){
     const [navbarOpen,setNavbarOpen] = useState(false)
@@ -155,8 +171,8 @@ import Link from 'next/link';
                      {/*   <ConnectButton  />*/} 
                      
                      <div className="flex justify-between items-center">
-
-                
+                        
+                     <WalletDefault />
               </div>
                      </div>
            </div></div>  </header>))

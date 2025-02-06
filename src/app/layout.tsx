@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+
 import "../styles/globals.css";
+import '@coinbase/onchainkit/styles.css'; 
 
-
+import {WagmiConfig}  from 'wagmi';
+import { Providers } from '../providers';
+import { cookieToInitialState } from 'wagmi';
+import { headers } from 'next/headers';
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -23,12 +28,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const initialState = cookieToInitialState(
+    WagmiConfig,
+    ( headers()).get('cookie')
+  );
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+          <Providers initialState={initialState}>{children}</Providers>
       </body>
     </html>
   );

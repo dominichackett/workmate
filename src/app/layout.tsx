@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+//import '@coinbase/onchainkit/styles.css'; 
 
 import "../styles/globals.css";
-import '@coinbase/onchainkit/styles.css'; 
 
 import {WagmiConfig}  from 'wagmi';
 import { Providers } from '../providers';
@@ -28,16 +28,16 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const initialState = cookieToInitialState(
+  /*const initialState = cookieToInitialState(
     WagmiConfig,
     ( headers()).get('cookie')
-  );
+  );*/
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-          <Providers initialState={initialState}>{children}</Providers>
+          <Providers >{children}</Providers>
       </body>
     </html>
   );

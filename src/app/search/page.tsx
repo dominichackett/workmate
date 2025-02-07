@@ -10,10 +10,37 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup' 
 import { PencilSquareIcon,CloudArrowUpIcon} from '@heroicons/react/24/solid'; // For outline version
 import Notification from '../components/Notification/Notification';
+import { db } from "@/lib/firebase";
+import { doc, getDoc,setDoc } from "firebase/firestore";
+import  {useAccount}  from 'wagmi';
 
 const iconsize='64px'
 const Search: NextPage = () => {
-
+  const {address,isConnected,isConnecting} =  useAccount()
+  console.log(address)
+ 
+  useEffect(()=>{
+   async function getSearchInfo() {
+     
+     const searchRef = doc(db, "search", address);
+     const searchSnap = await getDoc(searchRef);
+ 
+     if (searchSnap.exists()) {
+         console.log( searchSnap.data());  // Return search data
+         formik.setValues({
+           terms:searchSnap.data().terms,
+           interval: searchSnap.data().interval,
+           
+         });
+     } else {
+         console.log( null);  // Search data not found
+     }
+ 
+ }
+ if( address)
+ getSearchInfo()
+  },[address])
+  
      // NOTIFICATIONS functions
 const [notificationTitle, setNotificationTitle] = useState("");
 
@@ -27,15 +54,13 @@ setShow(false);
 
     const formik = useFormik({
         initialValues: {
-          url: "",
-          match:"",
+          
+          terms:"",
           interval:10
         },
         validationSchema: Yup.object({
-          url: Yup.string()
-            .min(2, "must be at least 2 characters")
-            .required("required"),
-            match: Yup.string()
+         
+            terms: Yup.string()
             .min(2, "must be at least 2 characters")
             .required("required"),   
             interval:  Yup.number()
@@ -46,42 +71,23 @@ setShow(false);
          
         }),
         onSubmit: async(values) => {
-          const causeData = {
-            url:values.url,
-           };
-        
+         
           try {
-            const response = await fetch('/api/createdepartment', { // Replace with your actual endpoint
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(causeData),
-            });
-        
-            if (!response.ok) {
-              // Handle errors
-              const errorData = await response.json();
-              setDialogType(2) //Error
-              setNotificationTitle("Add Department")
-              setNotificationDescription(errorData.error)
-              setShow(true)
-              return;
-            }
-        
-            const data = await response.json();
+           
+            const searchRef = doc(db, "search", address.toString()); // Set doc ID as wallet address
+
+          await setDoc(searchRef, {interval:values.interval,terms:values.terms}, { merge: false }); 
             setDialogType(1) //Success
-            setNotificationTitle("Add Department")
-            setNotificationDescription(`Department created successfully! Department ID: ${data.departmentId}`)
+            setNotificationTitle("Configure Search")
+            setNotificationDescription(`Search terms successfully updated`)
             setShow(true)
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            router.push("/departments")
+           
           
           } catch (error) {
             console.log("Network error:", error);
             
             setDialogType(2) //Error
-            setNotificationTitle("Add Department")
+            setNotificationTitle("Configure Search")
             setNotificationDescription("An error occurred. Please try again.")
             setShow(true)
           }
@@ -141,41 +147,22 @@ setShow(false);
            </div>
 
          
+          
+
            <div className="sm:col-span-6">
-             <label htmlFor="url" className="block text-sm font-medium leading-6 text-gray-900">
-               Search Url  {formik.touched.url && formik.errors.url ? (
-          <span className="text-red-500 text-sm">{formik.errors.url}</span>
+             <label htmlFor="terms" className="block text-sm font-medium leading-6 text-gray-900">
+               Search  {formik.touched.terms && formik.errors.terms ? (
+          <span className="text-red-500 text-sm">{formik.errors.terms}</span>
         ) : null}
              </label>
              <div className="mt-2">
                <textarea
-                 rows={4}
-                 name="url"
-                 id="url"
+                 rows={10}
+                 name="terms"
+                 id="terms"
                  onChange={formik.handleChange}
                  onBlur={formik.handleBlur}
-                 value={formik.values.url}
-           
-                 className="bg-[#2dd9ff] block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-               ></textarea>
-             </div>
-           </div>
-
-
-           <div className="sm:col-span-6">
-             <label htmlFor="match" className="block text-sm font-medium leading-6 text-gray-900">
-               Match  {formik.touched.match && formik.errors.match ? (
-          <span className="text-red-500 text-sm">{formik.errors.match}</span>
-        ) : null}
-             </label>
-             <div className="mt-2">
-               <textarea
-                 rows={4}
-                 name="match"
-                 id="match"
-                 onChange={formik.handleChange}
-                 onBlur={formik.handleBlur}
-                 value={formik.values.match}
+                 value={formik.values.terms}
            
                  className="bg-[#2dd9ff] block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
                ></textarea>

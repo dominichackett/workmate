@@ -8,7 +8,7 @@ const Home: NextPage = () => {
   return (
     <div className={"container"}>
       <Head>
-        <title>Meme Coin Launcher</title>
+        <title>Work Mate</title>
         <meta
           content="Cross Chain Meme Coins"
           name="description"

@@ -10,10 +10,36 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup' 
 import { PencilSquareIcon,UserCircleIcon,CloudArrowUpIcon} from '@heroicons/react/24/solid'; // For outline version
 import Notification from '../components/Notification/Notification';
+import  {useAccount}  from 'wagmi';
+import { db } from "@/lib/firebase";
+import { doc, getDoc,setDoc } from "firebase/firestore";
 
 const iconsize='64px'
 const Profile: NextPage = () => {
+ const {address,isConnected,isConnecting} =  useAccount()
+ console.log(address)
 
+ useEffect(()=>{
+  async function getProfile() {
+    
+    const profileRef = doc(db, "profile", address);
+    const profileSnap = await getDoc(profileRef);
+
+    if (profileSnap.exists()) {
+        console.log( profileSnap.data());  // Return profile data
+        formik.setValues({
+          name:profileSnap.data().name,
+          email: profileSnap.data().email,
+          
+        });
+    } else {
+        console.log( null);  // Profile not found
+    }
+
+}
+if( address)
+getProfile()
+ },[address])
      // NOTIFICATIONS functions
 const [notificationTitle, setNotificationTitle] = useState("");
 
@@ -44,42 +70,22 @@ setShow(false);
          
         }),
         onSubmit: async(values) => {
-          const causeData = {
-            url:values.url,
-           };
-        
+          
+          const profileRef = doc(db, "profile", address.toString()); // Set doc ID as wallet address
+
+          await setDoc(profileRef, {name:values.name,email:values.email}, { merge: false }); 
+          console.log("Profile added successfully!");
           try {
-            const response = await fetch('/api/createdepartment', { // Replace with your actual endpoint
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(causeData),
-            });
-        
-            if (!response.ok) {
-              // Handle errors
-              const errorData = await response.json();
-              setDialogType(2) //Error
-              setNotificationTitle("Add Department")
-              setNotificationDescription(errorData.error)
-              setShow(true)
-              return;
-            }
-        
-            const data = await response.json();
             setDialogType(1) //Success
-            setNotificationTitle("Add Department")
-            setNotificationDescription(`Department created successfully! Department ID: ${data.departmentId}`)
+            setNotificationTitle("Edit Profile")
+            setNotificationDescription(`Profile updated successfully!`)
             setShow(true)
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            router.push("/departments")
           
           } catch (error) {
             console.log("Network error:", error);
             
             setDialogType(2) //Error
-            setNotificationTitle("Add Department")
+            setNotificationTitle("Edit Profile")
             setNotificationDescription("An error occurred. Please try again.")
             setShow(true)
           }

@@ -11,8 +11,8 @@ export function Providers(props: { children: ReactNode }) {
       chain={baseSepolia} // add baseSepolia for testing
       config={{
         appearance: {
-          mode: 'dark', // 'auto' | 'light' | 'dark'
-          theme: 'default', // 'default' | 'base' | 'cyberpunk' | 'hacker' | 'your-custom-theme'
+          mode: 'auto', // 'auto' | 'light' | 'dark'
+          theme: 'hacker', // 'default' | 'base' | 'cyberpunk' | 'hacker' | 'your-custom-theme'
         },
       }}
     >

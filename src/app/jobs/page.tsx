@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation'
 import { InlineIcon  } from '@iconify/react';
 import { BuildingOfficeIcon, PencilIcon, TrashIcon,WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
 import Pagination from '../components/Pagination/Pagination';
-import { db } from "@/lib/firebase";
+import { db } from "../../lib/firebase";
 import { collection, doc, getCountFromServer, getDoc,getDocs,limit,orderBy,query,setDoc, startAfter, where } from "firebase/firestore";
 import  {useAccount}  from 'wagmi';
 

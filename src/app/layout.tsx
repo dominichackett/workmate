@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-//import '@coinbase/onchainkit/styles.css'; 
+import '@coinbase/onchainkit/styles.css'; 
 
 import "../styles/globals.css";
 

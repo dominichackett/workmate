@@ -11,7 +11,7 @@ import * as Yup from 'yup'
 import { PencilSquareIcon,UserCircleIcon,CloudArrowUpIcon} from '@heroicons/react/24/solid'; // For outline version
 import Notification from '../components/Notification/Notification';
 import  {useAccount}  from 'wagmi';
-import { db } from "@/lib/firebase";
+import { db } from "../../lib/firebase";
 import { doc, getDoc,setDoc } from "firebase/firestore";
 
 const iconsize='64px'
@@ -139,7 +139,7 @@ setShow(false);
   onChange={formik.handleChange}
        onBlur={formik.handleBlur}
        value={formik.values.name}
-  className="bg-[#2dd9ff] block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+  className="p-2 bg-[#2dd9ff] block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 />
              </div>
            </div>
@@ -159,7 +159,7 @@ setShow(false);
   onChange={formik.handleChange}
        onBlur={formik.handleBlur}
        value={formik.values.email}
-  className="bg-[#2dd9ff] block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+  className="p-2 bg-[#2dd9ff] block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
 />
              </div>
            </div>
@@ -183,7 +183,7 @@ setShow(false);
                               formik.isSubmitting ? "opacity-50 cursor-not-allowed" : ""
                             }`}
                             disabled={formik.isSubmitting}  >
-                              <CloudArrowUpIcon className="w-5 h-5" /> {/* Adjust icon size if needed */}
+                              <CloudArrowUpIcon className="w-5 h-5 mr-2" /> {/* Adjust icon size if needed */}
                               {formik.isSubmitting ? "Saving..." : "Save"}
                           </button>
                           <Notification

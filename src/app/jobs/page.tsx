@@ -10,12 +10,21 @@ import { useRouter } from 'next/navigation'
 import { InlineIcon  } from '@iconify/react';
 import { BuildingOfficeIcon, PencilIcon, TrashIcon,WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
 import Pagination from '../components/Pagination/Pagination';
+import { db } from "@/lib/firebase";
+import { collection, doc, getCountFromServer, getDoc,getDocs,limit,orderBy,query,setDoc, startAfter, where } from "firebase/firestore";
+import  {useAccount}  from 'wagmi';
+
 const iconsize='64px'
-const Home: NextPage = () => {
-  const [jobs,setJobs] = useState([{id:1,name:"Bongo",qualified:1,date:new Date().toLocaleString()}])
+const Jobs: NextPage = () => {
+  const {address,isConnected,isConnecting} =  useAccount()
+
+  const [jobs,setJobs] = useState([])
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages,setTotalPages] = useState(0);
   const [recordsPerPage,setRecordsPerPage] = useState(10)
+  const [lastDocs,setLastDocs]  = useState([])
+  const [lastDoc,setLastDoc]  = useState([])
+
   const router  = useRouter()
 
   const handlePageChange = (page:number) => {
@@ -33,7 +42,36 @@ const Home: NextPage = () => {
   
 };
 
+useEffect(()=>{
+  async function getJobs() {
+    
+    const searchRef = collection(db, "jobs");
+    let q = query(searchRef, where("owner", "==", address), orderBy("submitdate", "desc"), // Order required for pagination
+    limit(recordsPerPage));
 
+    // If it's not the first page, start after the last document of the previous page
+  if (currentPage > 1 && lastDocs[currentPage - 2]) {
+    q = query(q, startAfter(lastDocs[currentPage - 2]));
+  }
+
+
+    const querySnapshot = await getDocs(q);
+    setJobs(querySnapshot.docs)
+    setLastDocs(querySnapshot.docs)
+    setLastDoc(querySnapshot.docs[querySnapshot.docs.length - 1])
+    const countQuery = query(searchRef, where("owner", "==", address));
+  const snapshot = await getCountFromServer(countQuery);
+  const totalDocuments = snapshot.data().count;
+  setTotalPages(Math.ceil(totalDocuments / recordsPerPage));
+    console.log(querySnapshot.docs)
+
+    
+
+}
+if( address)
+getJobs()
+ },[address,recordsPerPage])
+ 
   return (
     <div className={styles.container}>
       <Head>
@@ -68,10 +106,10 @@ const Home: NextPage = () => {
                       Name
                     </th>
                     <th scope="col" className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
-                      Date Retrieved
+                      Date Submitted
                     </th>
                     <th scope="col" className="py-3.5 pl-4 pr-3 text-center text-sm font-semibold text-gray-900 sm:pl-6">
-                      Qualified
+                      Budget
                     </th>
                     <th scope="col" className="relative py-3.5 pl-3 pr-4 sm:pr-6">
                       <span className="sr-only">Edit</span>
@@ -84,16 +122,18 @@ const Home: NextPage = () => {
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {jobs.map((job) => (
                     <tr key={job.id}>
-                      <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {job.name}
+                      <td className="cursor-pointer whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6"
+                       title={job?.data()?.title} >
+                      {job?.data()?.title?.slice(0, 42) + (job?.data()?.title?.length > 42 ? "..." : "")}
                       </td>
 
                       <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {job.date}
+                        {new Date(job.data().submitdate*1000).toLocaleString()}
                       </td>
 
                       <td className="whitespace-nowrap text-center py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {job.qualified == 1 ? "Yes":"No"}
+                      {`$${job.data().budget.minimum.toLocaleString()} - $${job.data().budget.maximum.toLocaleString()}`}
+
                       </td>
                      
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
@@ -132,4 +172,4 @@ const Home: NextPage = () => {
       );
 };
 
-export default Home;
+export default Jobs;

@@ -30,6 +30,7 @@ const Search: NextPage = () => {
          formik.setValues({
            terms:searchSnap.data().terms,
            interval: searchSnap.data().interval,
+           paused:searchSnap.data().paused
            
          });
      } else {
@@ -56,7 +57,8 @@ setShow(false);
         initialValues: {
           
           terms:"",
-          interval:10
+          interval:10,
+          paused:false
         },
         validationSchema: Yup.object({
          
@@ -66,7 +68,9 @@ setShow(false);
             interval:  Yup.number()
             .required("Interval selection is required")
             .min(10, "Interval must be at least 10"),
-            
+            paused: Yup.boolean()
+            .required("Required")
+            .oneOf([true, false], "Invalid value")        
 
          
         }),
@@ -76,7 +80,7 @@ setShow(false);
            
             const searchRef = doc(db, "search", address.toString()); // Set doc ID as wallet address
 
-          await setDoc(searchRef, {interval:values.interval,terms:values.terms}, { merge: false }); 
+          await setDoc(searchRef, {interval:values.interval,terms:values.terms,paused:values.paused}, { merge: false }); 
             setDialogType(1) //Success
             setNotificationTitle("Configure Search")
             setNotificationDescription(`Search terms successfully updated`)
@@ -147,7 +151,25 @@ setShow(false);
            </div>
 
          
-          
+           <div className="lg:col-span-3">
+  <label htmlFor="paused" className="block text-sm font-medium leading-6 text-gray-900">
+    Pause Agent {formik.touched.paused && formik.errors.paused ? (
+      <span className="text-red-500 text-sm">{formik.errors.paused}</span>
+    ) : null}
+  </label>
+  <div className="mt-2">
+    <input
+      type="checkbox"
+      name="paused"
+      id="paused"
+      onChange={formik.handleChange}
+      onBlur={formik.handleBlur}
+      checked={formik.values.paused}
+      className="h-5 w-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+    />
+  </div>
+</div>
+
 
            <div className="sm:col-span-6">
              <label htmlFor="terms" className="block text-sm font-medium leading-6 text-gray-900">

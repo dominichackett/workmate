@@ -73,7 +73,7 @@ setShow(false);
           
           const profileRef = doc(db, "profile", address.toString()); // Set doc ID as wallet address
 
-          await setDoc(profileRef, {name:values.name,email:values.email}, { merge: false }); 
+          await setDoc(profileRef, {name:values.name,email:values.email}, { merge: true }); 
           console.log("Profile added successfully!");
           try {
             setDialogType(1) //Success
@@ -92,7 +92,8 @@ setShow(false);
       
         },
       });
-          
+     
+    
   return (
     <div className={styles.container}>
       <Head>

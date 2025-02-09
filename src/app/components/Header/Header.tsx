@@ -7,6 +7,8 @@ import { useState ,useEffect,useRef,useContext} from 'react'
   import { useRouter } from 'next/navigation'
 
 import Link from 'next/link';
+// @ts-ignore
+
 import {
   ConnectWallet,
   Wallet,
@@ -15,6 +17,8 @@ import {
   WalletDropdownBasename,
   WalletDropdownLink,
 } from '@coinbase/onchainkit/wallet';
+// @ts-ignore
+
 import {
   Address,
   Avatar,
@@ -22,7 +26,7 @@ import {
   EthBalance,
   Name,
   Identity,
-} from '@coinbase/onchainkit/identity';
+} from '@coinbase/onchainkit/esm/identity';
 
   export default function Header(){
     const [navbarOpen,setNavbarOpen] = useState(false)
@@ -33,7 +37,6 @@ import {
     const session = true
    const status = false    
     const router  = useRouter()
-    const aCode = useRef()
     const isConnected =true
       const [selectedChain, setSelectedChain] = useState(-1);
    

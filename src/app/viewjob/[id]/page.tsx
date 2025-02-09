@@ -11,7 +11,7 @@ import * as Yup from 'yup'
 import { PencilSquareIcon,CloudArrowUpIcon} from '@heroicons/react/24/solid'; // For outline version
 import Notification from '../../components/Notification/Notification';
 import { db } from "../../../lib/firebase";
-import { doc, getDoc,setDoc } from "firebase/firestore";
+import { doc, DocumentData, getDoc,QueryDocumentSnapshot,setDoc } from "firebase/firestore";
 import  {useAccount}  from 'wagmi';
 import { useParams  } from 'next/navigation';
 
@@ -19,7 +19,7 @@ const iconsize='64px'
 const ViewJob: NextPage = () => {
 const {id} = useParams<{id:string}>(); // 
 const {address,isConnected,isConnecting} =  useAccount()
-const [job,setJob] = useState()
+const [job,setJob] = useState<QueryDocumentSnapshot<DocumentData> | null>(null); 
 const [isGenerating,setIsGenerating] = useState(false)
 
 console.log(id)
@@ -39,7 +39,7 @@ useEffect(()=>{
           
         });
         console.log(jobSnap.data())
-        setJob(jobSnap.data())
+        setJob(jobSnap)
     } else {
         console.log( null);  // Search data not found
     }
@@ -93,6 +93,52 @@ console.log(response)
 const close = async () => {
 setShow(false);
 };
+   const bidForm = useFormik( {   initialValues: {
+   
+    amount:100,
+    days:1,
+    
+ },
+ validationSchema: Yup.object({
+  amount:Yup.number()
+  .required("Amount is required")
+  .min(1, "Amount must be at least 1"),
+  days:Yup.number()
+  .required("Days is required")
+  .min(1, "Days must be at least 1"),
+     
+  
+ }),
+ onSubmit: async(values) => {
+  {
+
+    const response = await fetch("/api/bid", {
+      method: "POST",
+      
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({bidder_id:12345678,description:formik.values.proposal,project_id:id, amount:values.amount,period:values.days, milestone_percentage:100 }),
+    });
+  console.log(response)
+    if (!response.ok) {
+      setDialogType(2) //Error
+      setNotificationTitle("Bid Proposal")
+      setNotificationDescription("An error occurred. Please try again.")
+      setShow(true)
+      setIsGenerating(false)
+      return
+    }
+  
+    const responseData = await response.json();
+    setDialogType(1) //Success
+    setNotificationTitle("Bid Proposal")
+    setNotificationDescription(`Successfully submitted proposal`)
+    setShow(true) 
+    console.log(responseData)
+  
+
+}}})
 
     const formik = useFormik({
         initialValues: {
@@ -123,7 +169,7 @@ setShow(false);
           try {
            
             const jobRef = doc(db, "jobs", id.toString()); 
-            await setDoc(jobRef, {...job,description:values.description,proposal:values.proposal,bidstatus:values.bidstatus}, { merge: false }); 
+            await setDoc(jobRef, {...job.data(),description:values.description,proposal:values.proposal,bidstatus:values.bidstatus}, { merge: false }); 
 
             
             setDialogType(1) //Success
@@ -160,7 +206,6 @@ setShow(false);
         <div className="bg-white sm:rounded-lg mt-24  m-24">
                   <div className="px-6 py-8 sm:px-10">
                    
-                  <form onSubmit={formik.handleSubmit} >
                  
                   <div className="space-y-12">
        
@@ -173,6 +218,67 @@ setShow(false);
  </div>
          <h2 className="text-base font-semibold leading-7 text-gray-900">Job Imformation</h2>
          <p className="mt-1 text-sm leading-6 text-gray-600">All information is required.</p>
+
+         <form onSubmit={bidForm.handleSubmit} >
+
+<div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+<div className="sm:col-span-2 sm:col-start-1">
+             <label htmlFor="amount" className="block text-sm font-medium leading-6 text-gray-900">
+               Bid Amount {bidForm.touched.amount && bidForm.errors.amount ? (
+          <span className="text-red-500 text-sm">{bidForm.errors.amount}</span>
+        ) : null}
+             </label>
+             <div className="mt-2">
+             <input
+  type="number"
+  name="amount"
+  id="amount"
+  onChange={bidForm.handleChange}
+       onBlur={bidForm.handleBlur}
+       value={bidForm.values.amount}
+  className="p-2 bg-[#2dd9ff] block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+/>
+             </div>
+           </div>
+           <div className="sm:col-span-2">
+             <label htmlFor="days" className="block text-sm font-medium leading-6 text-gray-900">
+               Duration (Days) {bidForm.touched.days && bidForm.errors.days ? (
+          <span className="text-red-500 text-sm">{bidForm.errors.days}</span>
+        ) : null}
+             </label>
+             <div className="mt-2">
+             <input
+  type="number"
+  name="days"
+  id="days"
+  onChange={bidForm.handleChange}
+       onBlur={bidForm.handleBlur}
+       value={bidForm.values.days}
+  className="p-2 bg-[#2dd9ff] block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+/>
+             </div>
+           </div>
+
+           <div className="sm:col-span-2">
+           <label htmlFor="button" className="block text-sm font-medium leading-6 text-gray-900">
+              Place Bid
+             </label>
+             <div className="mt-2">
+
+<button
+                            type="submit"
+                            className={`flex w-52 justify-center rounded-md border border-transparent bg-orange-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-orange-700 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 ${
+                              bidForm.isSubmitting ? "opacity-50 cursor-not-allowed" : ""
+                            }`}
+                            disabled={bidForm.isSubmitting}  >
+                              <CloudArrowUpIcon className="w-5 h-5 mr-2" /> {/* Adjust icon size if needed */}
+                              {bidForm.isSubmitting ? "Bidding..." : "Place Bid"}
+                          </button></div>  </div>        
+</div>
+
+ </form>
+
+         <form onSubmit={formik.handleSubmit} >
 
          <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
 
@@ -201,7 +307,7 @@ setShow(false);
                Budget 
              </label>
              <div className="mt-2 font-bold">
-             {  `$${job?.budget?.minimum?.toLocaleString()} - $${job?.budget?.maximum?.toLocaleString()}`}
+             {  `$${job?.data()?.budget?.minimum?.toLocaleString()} - $${job?.data()?.budget?.maximum?.toLocaleString()}`}
              </div>
              </div>
 
@@ -211,7 +317,7 @@ setShow(false);
                Bids
              </label>
              <div className="mt-2 font-bold">
-             {   `Avg: $${job?.bid_stats?.bid_avg?.toLocaleString()} - Count: ${job?.bid_stats?.bid_count?.toLocaleString()}`}
+             {   `Avg: $${job?.data().bid_stats?.bid_avg?.toLocaleString()} - Count: ${job?.data().bid_stats?.bid_count?.toLocaleString()}`}
              </div>
              </div>
 
@@ -227,7 +333,7 @@ setShow(false);
        
        onChange={formik.handleChange}
        onBlur={formik.handleBlur}
-       value={formik.values.status}
+       value={formik.values.bidstatus}
        className="bg-[#2dd9ff] block w-60 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
      >
   <option value={0}>Pending</option>
@@ -303,9 +409,7 @@ setShow(false);
 
           
          </div>
-       </div>
-
-       <div className="border-b border-gray-900/10 pb-12">
+         <div className="mt-6 border-b border-gray-900/10 pb-12">
        <button
                             type="submit"
                             className={`flex w-52 justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
@@ -315,6 +419,7 @@ setShow(false);
                               <CloudArrowUpIcon className="w-5 h-5 mr-2" /> {/* Adjust icon size if needed */}
                               {formik.isSubmitting ? "Saving..." : "Save"}
                           </button>
+                          
                           <Notification
         type={dialogType}
         show={show}
@@ -324,8 +429,11 @@ setShow(false);
       />
 
 </div>
+         </form>
+       </div>
+
+     
      </div>
-                </form>     
                   </div>
                
                 </div>            <Notification

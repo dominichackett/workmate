@@ -11,7 +11,7 @@ import { InlineIcon  } from '@iconify/react';
 import { BuildingOfficeIcon, PencilIcon, TrashIcon,WrenchScrewdriverIcon } from '@heroicons/react/24/outline';
 import Pagination from '../components/Pagination/Pagination';
 import { db } from "../../lib/firebase";
-import { collection, doc, getCountFromServer, getDoc,getDocs,limit,orderBy,query,setDoc, startAfter, where } from "firebase/firestore";
+import { collection, doc, DocumentData, getCountFromServer, getDoc,getDocs,limit,orderBy,query,QueryDocumentSnapshot,setDoc, startAfter, where } from "firebase/firestore";
 import  {useAccount}  from 'wagmi';
 
 const iconsize='64px'
@@ -21,9 +21,9 @@ const Jobs: NextPage = () => {
   const [jobs,setJobs] = useState([])
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages,setTotalPages] = useState(0);
-  const [recordsPerPage,setRecordsPerPage] = useState(10)
+  const [recordsPerPage,setRecordsPerPage] = useState(50)
   const [lastDocs,setLastDocs]  = useState([])
-  const [lastDoc,setLastDoc]  = useState([])
+  const [lastDoc,setLastDoc]  = useState<QueryDocumentSnapshot<DocumentData> | null>(null)
 
   const router  = useRouter()
 
@@ -146,7 +146,7 @@ getJobs()
                       </td>
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
                       <button className="cursor-pointer flex items-center text-red-600 hover:text-red-700"
-                                            onClick={()=>deleteDepartment(department.id)}>
+                                           >
 
       <TrashIcon className="w-6 h-6" /> {/* Adjust size as needed */}
       <span className="ml-2">Delete</span>

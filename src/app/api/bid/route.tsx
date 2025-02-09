@@ -6,7 +6,7 @@ export async function POST(request: Request) {
  
     try {
        
-       // return NextResponse.json({status:200});
+       return NextResponse.json({status:200});
 
         const response = await fetch(process.env.NEXT_PUBLIC_FREELANCER_URL, {
             method: 'POST',

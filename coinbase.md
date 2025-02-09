@@ -23,6 +23,16 @@ https://github.com/dominichackett/workmate/blob/6e892f01e6ff49add796a13e5ddce9b1
 ### AgentKit autonomous bot for fetching of Jobs on Freelancer.com and emailing to users
 https://github.com/dominichackett/workmateagent/blob/147a025ae82bb3ddc4d9c7f469fe16680c477dee/chatbot.ts#L1-L307
 
+### AgentKit  Autonomous bot Freelancer Action
+https://github.com/dominichackett/workmateagent/blob/147a025ae82bb3ddc4d9c7f469fe16680c477dee/freelancer/freelancerActionProvider.ts#L1-L48
 
-### autonomous bot repo  
+### AgentKit  Autonomous bot Freelancer Action Schema
+
+https://github.com/dominichackett/workmateagent/blob/147a025ae82bb3ddc4d9c7f469fe16680c477dee/freelancer/schemas.ts#L1-L10
+
+
+
+### AgentKit Autonomous bot repo  
 https://github.com/dominichackett/workmateagent
+
+

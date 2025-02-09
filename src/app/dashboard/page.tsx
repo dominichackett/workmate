@@ -10,7 +10,6 @@ import { Checkout, CheckoutButton, CheckoutStatus,LifecycleStatus } from '@coinb
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import  {useAccount}  from 'wagmi';
 import { db } from '../../lib/firebase';
-import { subscribe } from 'diagnostics_channel';
 
 const iconsize='64px'
 const Home: NextPage = () => {
@@ -45,6 +44,7 @@ getProfile()
   const profileRef = doc(db, "profile", address.toString()); // Set doc ID as wallet address
 
   await setDoc(profileRef, {subscribed:true}, { merge: true }); 
+  setSubscribed(true)
 
  }
   const statusHandler = (status: LifecycleStatus) => { 
